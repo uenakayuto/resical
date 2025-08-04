@@ -1,0 +1,163 @@
+.App {
+  background-color: white;
+  min-height: 100vh;
+  color: black;
+}
+
+.header {
+  background-color: skyblue;
+  color: white;
+  padding: 0.5rem;
+  font-size: 3rem;
+  text-align: center;
+}
+
+.main {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+/* 入力パネル全体を横並びに配置 */
+.input-panels {
+  display: flex;
+  width: 100%;
+}
+
+/* 各パネル共通 */
+.left-panel, .right-panel {
+  width: 50%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: flex-start;
+  padding-top: 20vh;
+}
+
+.input-group {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  transform: translateY(-50%);
+}
+
+.label {
+  font-size: 1.2rem;
+  margin-bottom: 0.5rem;
+}
+
+/* 左側の入力欄 */
+.panel-input {
+  font-family: sans-serif;
+  font-size: 1.5rem;
+  padding: 0.5rem;
+  text-align: right;
+  width: 200px;
+}
+
+/* 右側の入力欄 */
+.multi-input {
+  font-family: sans-serif;
+  font-size: 1.5rem;
+  padding: 0.5rem;
+  text-align: right;
+  width: 200px;
+  height: 12.5rem;
+  resize: none;
+  overflow-y: auto;
+  border: 1px solid #ccc;
+  border-radius: 8px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.count-hint {
+  font-size: 12px;
+  color: gray;
+  text-align: right;
+  margin-top: 4px;
+}
+
+.result-area {
+  width: 100%;
+  margin-top: 0.1rem;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.result-area .label {
+  font-size: 1.2rem;
+  margin-bottom: 0.5rem;
+  font-weight: bold;
+}
+
+.result-output {
+  width: 80%;
+  min-height: 100px;
+  display: flex;
+  align-items: center;
+  border: 1px solid #ccc;
+  padding: 0.5rem;
+  font-size: 1.5rem;
+  background-color: #f9f9f9;
+  border-radius: 8px;
+  overflow-y: auto;
+  white-space: pre-wrap;
+  box-shadow: 0 0 8px rgba(0, 0, 0, 0.05);
+}
+
+/* ボタンのスタイル */
+.button-wrapper {
+  display: flex;
+  flex-direction: column; /* 縦並びにする */
+  align-items: center;     /* 水平方向の中央揃え */
+  margin-top: 1rem;
+  gap: 1rem;               /* ボタン間の余白 */
+}
+
+/* 共通ボタンスタイル */
+.base-button {
+  padding: 0.75rem 2rem;
+  font-size: 1.2rem;
+  font-weight: bold;
+  color: white;
+  background-color: #007bff;
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: background-color 0.2s;
+  white-space: nowrap;  /* ボタンの1行表示を強制 */
+  text-align: center;
+}
+
+.base-button:hover {
+  background-color: #0056b3;
+}
+
+.overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(255, 255, 255, 0.7);
+  z-index: 1000;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.spinner {
+  width: 60px;
+  height: 60px;
+  border: 8px solid #ccc;
+  border-top: 8px solid #2d9cdb;
+  border-radius: 50%;
+  animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
