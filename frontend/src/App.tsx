@@ -2,6 +2,7 @@ import './index.css';
 import './App.css';
 import { useState } from 'react';
 import axios from 'axios';
+const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || 'http://localhost:8000';
 
 function App() {
   const [target, setTarget] = useState('');
@@ -31,7 +32,7 @@ function App() {
 
     setIsLoading(true);
     try {
-      const response = await axios.post('http://localhost:8000/find_combination', {
+      const response = await axios.post(`${API_BASE_URL}/find_combination`, {
         numbers,
         target: targetInt,
       });
@@ -73,7 +74,7 @@ function App() {
 
     setIsLoading(true);
     try {
-      const response = await axios.post('http://localhost:8000/remove_used_numbers', {
+      const response = await axios.post(`${API_BASE_URL}/remove_used_numbers`, {
         numbers,
         used: lastUsed,
       });
