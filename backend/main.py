@@ -1,4 +1,4 @@
-from fastapi import FastAPI
+from fastapi import FastAPI, Response
 from pydantic import BaseModel
 from typing import List, Optional
 import threading
@@ -113,9 +113,10 @@ def remove_used_numbers(req: RemovalRequest):
     return {"remaining": remaining}
 
 # ルートパス（UptimeRobot用など）
-@app.get("/")
-async def read_root():
-    return {"message": "Hello, World!"}
+@app.get("/", include_in_schema=False)
+@app.head("/", include_in_schema=False)
+async def root():
+    return Response(content='{"message": "Hello, World!"}', media_type="application/json")
 
 # CORS ミドルウェア
 app.add_middleware(
