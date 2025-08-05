@@ -1,7 +1,6 @@
 from fastapi import FastAPI
 from pydantic import BaseModel
 from typing import List, Optional
-from itertools import combinations
 import threading
 import time
 import queue
@@ -27,38 +26,56 @@ def validate_inputs(numbers: List[int], target: int, result_queue):
     elif any(n < 1 or not isinstance(n, int) for n in numbers):
         result_queue.put(CombinationResponse(message="numbersには1以上の自然数のみを含めてください．"))
 
+def reorder_by_original_order(original, subset):
+    order_map = {num: i for i, num in enumerate(original)}
+    return sorted(subset, key=lambda x: order_map[x])
+
 def find_combination_worker(numbers, target, result_queue):
     validate_inputs(numbers, target, result_queue)
     if not result_queue.empty():
         return
+
     sorted_numbers = sorted(numbers, reverse=True)
-    # print(f"Sorted numbers: {sorted_numbers}")
-    max_sorted_numbers = sorted_numbers[0]
-    # print(f"Max sorted number: {max_sorted_numbers}")
-    threshold = math.ceil(target / max_sorted_numbers)
+    max_number = sorted_numbers[0]
+    threshold = math.ceil(target / max_number)
     if threshold > len(sorted_numbers):
         result_queue.put(CombinationResponse(message="全合計がtargetに届きません．"))
         return
-    # print(f"Threshold for combinations: {threshold}")
+
     best_sum = float('inf')
     best_combination = None
 
-    for r in range(threshold, len(sorted_numbers) + 1):
-        for comb in combinations(sorted_numbers, r):
-            # print(f"Checking combination: {comb}")
-            total = sum(comb)
-            if total == target:
-                result_queue.put(CombinationResponse(exact=list(comb)))
-                return
-            if total < target:
-                # print(f"break: {comb}")
-                break
-            if target < total < best_sum:
-                best_sum = total
-                best_combination = comb
+    def dfs(index, path, total, depth):
+        nonlocal best_sum, best_combination, threshold
 
-    if best_sum != float('inf'):
-        result_queue.put(CombinationResponse(closest=list(best_combination), closest_sum=int(best_sum)))
+        # 深さが threshold に満たない間は合計チェックしない
+        if depth >= threshold:
+            if total == target:
+                reordered = reorder_by_original_order(numbers, path)
+                result_queue.put(CombinationResponse(exact=reordered))
+                return True  # 終了
+            elif total > target:
+                if total < best_sum:
+                    best_sum = total
+                    best_combination = list(path)
+                return False  # 枝切り
+            else:
+                threshold = depth + 1  # 探索深さを増やす
+
+        for i in range(index, len(sorted_numbers)):
+            next_num = sorted_numbers[i]
+            if dfs(i + 1, path + [next_num], total + next_num, depth + 1):
+                return True  # 終了
+        return False
+
+    dfs(0, [], 0, 0)
+
+    if not result_queue.empty():
+        return
+
+    if best_combination:
+        reordered = reorder_by_original_order(numbers, best_combination)
+        result_queue.put(CombinationResponse(closest=reordered, closest_sum=sum(best_combination)))
     else:
         result_queue.put(CombinationResponse(message="全合計がtargetに届きません．"))
 
@@ -79,8 +96,7 @@ async def find_combination(req: CombinationRequest):
     result.execution_time = round(time.perf_counter() - start, 3)
     return result
 
-# 13001, 12001, 14001, 11001, 15001, 10001, 16001, 9001, 17001, 8001, 18001, 7001, 19001, 6001, 20001, 5001, 21001, 4001, 22001, 3001, 23001, 2001, 24001, 1001, 25001
-
+# 使用済みの数字を取り除くエンドポイント
 class RemovalRequest(BaseModel):
     numbers: List[int]
     used: List[int]
@@ -96,15 +112,18 @@ def remove_used_numbers(req: RemovalRequest):
             remaining.remove(u)
     return {"remaining": remaining}
 
+# ルートパス（UptimeRobot用など）
 @app.get("/")
 async def read_root():
     return {"message": "Hello, World!"}
 
-# CORSミドルウェアの設定
+# CORS ミドルウェア
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["*"],  # 本番では適切に制限
+    allow_origins=["*"],  # 必要に応じて制限
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
 )
+
+# 13001, 12001, 14001, 11001, 15001, 10001, 16001, 9001, 17001, 8001, 18001, 7001, 19001, 6001, 20001, 5001, 21001, 4001, 22001, 3001, 23001, 2001, 24001, 1001, 25001

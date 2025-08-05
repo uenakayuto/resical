@@ -25,8 +25,8 @@ function App() {
       return;
     }
 
-    if (numbers.length > 25) {
-      setResult('🔴数値は25個以内で入力してください');
+    if (numbers.length > 50) {
+      setResult('🔴数値は50個以内で入力してください');
       return;
     }
 
@@ -112,7 +112,7 @@ function App() {
           </div>
           <div className="right-panel">
             <div className="input-group">
-              <p className="label">数値を入力 (25個以内)</p>
+              <p className="label">数値を入力 (50個以内)</p>
               <textarea
                 className="multi-input"
                 value={numbersText}
