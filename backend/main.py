@@ -116,7 +116,7 @@ def remove_used_numbers(req: RemovalRequest):
 @app.get("/", include_in_schema=False)
 @app.head("/", include_in_schema=False)
 async def root():
-    return Response(content='{"message": "Hello, World!"}', media_type="application/json")
+    return Response(content='{"message": "Hello, World!!!"}', media_type="application/json")
 
 # CORS ミドルウェア
 app.add_middleware(
