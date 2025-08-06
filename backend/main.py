@@ -36,11 +36,21 @@ def find_combination_worker(numbers, target, result_queue):
         return
 
     sorted_numbers = sorted(numbers, reverse=True)
+    n = len(sorted_numbers)
+    if n == 0:
+        result_queue.put(CombinationResponse(message="numbersが空です．"))
+        return
+
     max_number = sorted_numbers[0]
     threshold = math.ceil(target / max_number)
-    if threshold > len(sorted_numbers):
+    if threshold > n:
         result_queue.put(CombinationResponse(message="全合計がtargetに届きません．"))
         return
+
+    suffix_sum = [0] * n
+    suffix_sum[-1] = sorted_numbers[-1]
+    for i in range(n - 2, -1, -1):
+        suffix_sum[i] = suffix_sum[i + 1] + sorted_numbers[i]
 
     best_sum = float('inf')
     best_combination = None
@@ -60,12 +70,18 @@ def find_combination_worker(numbers, target, result_queue):
                     best_combination = list(path)
                 return False  # 枝切り
             else:
-                threshold = depth + 1  # 探索深さを増やす
+                threshold = depth + 1
 
-        for i in range(index, len(sorted_numbers)):
+        for i in range(index, n):
+            # 事前計算した suffix_sum で O(1) チェック
+            if suffix_sum[i] < target - total:
+                # 残りの合計でも到達不能 -> 以降さらに小さくなるので break
+                break
+
             next_num = sorted_numbers[i]
+
             if dfs(i + 1, path + [next_num], total + next_num, depth + 1):
-                return True  # 終了
+                return True
         return False
 
     dfs(0, [], 0, 0)
@@ -96,7 +112,6 @@ async def find_combination(req: CombinationRequest):
     result.execution_time = round(time.perf_counter() - start, 3)
     return result
 
-# 使用済みの数字を取り除くエンドポイント
 class RemovalRequest(BaseModel):
     numbers: List[int]
     used: List[int]
@@ -121,7 +136,10 @@ async def root():
 # CORS ミドルウェア
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["*"],  # 必要に応じて制限
+    allow_origins=[
+        "https://resical.vercel.app",
+        "http://localhost:5173",
+    ],
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
