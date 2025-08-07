@@ -60,17 +60,17 @@ def find_combination_worker(numbers, target, result_queue):
 
         # 深さが threshold に満たない間は合計チェックしない
         if depth >= threshold:
-            if total == target:
-                reordered = reorder_by_original_order(numbers, path)
-                result_queue.put(CombinationResponse(exact=reordered))
-                return True  # 終了
+            if total < target:
+                threshold = depth + 1
             elif total > target:
                 if total < best_sum:
                     best_sum = total
                     best_combination = list(path)
                 return False  # 枝切り
-            else:
-                threshold = depth + 1
+            elif total == target:
+                reordered = reorder_by_original_order(numbers, path)
+                result_queue.put(CombinationResponse(exact=reordered))
+                return True  # 終了              
 
         for i in range(index, n):
             # 事前計算した suffix_sum で O(1) チェック
