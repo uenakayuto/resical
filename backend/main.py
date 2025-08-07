@@ -22,9 +22,9 @@ class CombinationResponse(BaseModel):
 
 def validate_inputs(numbers: List[int], target: int, result_queue):
     if target < 1 or not isinstance(target, int):
-        result_queue.put(CombinationResponse(message="targetは1以上の自然数である必要があります．"))
+        result_queue.put(CombinationResponse(message="目標値は1以上の自然数である必要があります．"))
     elif any(n < 1 or not isinstance(n, int) for n in numbers):
-        result_queue.put(CombinationResponse(message="numbersには1以上の自然数のみを含めてください．"))
+        result_queue.put(CombinationResponse(message="数値欄には1以上の自然数のみを含めてください．"))
 
 def reorder_by_original_order(original, subset):
     order_map = {num: i for i, num in enumerate(original)}
@@ -38,13 +38,13 @@ def find_combination_worker(numbers, target, result_queue):
     sorted_numbers = sorted(numbers, reverse=True)
     n = len(sorted_numbers)
     if n == 0:
-        result_queue.put(CombinationResponse(message="numbersが空です．"))
+        result_queue.put(CombinationResponse(message="数値欄が空です．"))
         return
 
     max_number = sorted_numbers[0]
     threshold = math.ceil(target / max_number)
     if threshold > n:
-        result_queue.put(CombinationResponse(message="全合計がtargetに届きません．"))
+        result_queue.put(CombinationResponse(message="全合計が目標値に届きません．"))
         return
 
     suffix_sum = [0] * n
@@ -93,7 +93,7 @@ def find_combination_worker(numbers, target, result_queue):
         reordered = reorder_by_original_order(numbers, best_combination)
         result_queue.put(CombinationResponse(closest=reordered, closest_sum=sum(best_combination)))
     else:
-        result_queue.put(CombinationResponse(message="全合計がtargetに届きません．"))
+        result_queue.put(CombinationResponse(message="全合計が目標値に届きません．"))
 
 @app.post("/find_combination", response_model=CombinationResponse)
 async def find_combination(req: CombinationRequest):
