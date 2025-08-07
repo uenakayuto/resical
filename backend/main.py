@@ -60,13 +60,13 @@ def find_combination_worker(numbers, target, result_queue):
 
         # 深さが threshold に満たない間は合計チェックしない
         if depth >= threshold:
-            if total < target:
-                threshold = depth + 1
-            elif total > target:
+            if total > target:
                 if total < best_sum:
                     best_sum = total
                     best_combination = list(path)
                 return False  # 枝切り
+            elif total < target:
+                threshold = depth + 1
             elif total == target:
                 reordered = reorder_by_original_order(numbers, path)
                 result_queue.put(CombinationResponse(exact=reordered))
