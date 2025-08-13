@@ -12,13 +12,8 @@ function App() {
   const [isLoading, setIsLoading] = useState(false);
 
   useEffect(() => {
-    axios.get(`${API_BASE_URL}/`)
-      .then((res) => {
-        console.log("Root endpoint response:", res.data);
-      })
-      .catch((err) => {
-        console.error("Root endpoint error:", err);
-      });
+    fetch(`${API_BASE_URL}/`, { method: "GET" })
+      .catch(() => {});
   }, []);
 
   const handleRunClick = async () => {
