@@ -1,6 +1,6 @@
 import './index.css';
 import './App.css';
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import axios from 'axios';
 const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || 'http://localhost:8000';
 
@@ -10,6 +10,16 @@ function App() {
   const [result, setResult] = useState('');
   const [lastUsed, setLastUsed] = useState<number[] | null>(null);
   const [isLoading, setIsLoading] = useState(false);
+
+  useEffect(() => {
+    axios.get(`${API_BASE_URL}/`)
+      .then((res) => {
+        console.log("Root endpoint response:", res.data);
+      })
+      .catch((err) => {
+        console.error("Root endpoint error:", err);
+      });
+  }, []);
 
   const handleRunClick = async () => {
     const numbers = numbersText
