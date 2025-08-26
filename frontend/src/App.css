@@ -8,7 +8,7 @@
   background-color: skyblue;
   color: white;
   padding: 0.5rem;
-  font-size: 3rem;
+  font-size: 1.5rem;
   text-align: center;
 }
 
@@ -42,27 +42,27 @@
 }
 
 .label {
-  font-size: 1.2rem;
-  margin-bottom: 0.5rem;
+  font-size: 1rem;
+  margin-bottom: 0.25rem;
 }
 
 /* 左側の入力欄 */
 .panel-input {
   font-family: sans-serif;
-  font-size: 1.5rem;
-  padding: 0.5rem;
+  font-size: 1rem;
+  padding: 0.25rem;
   text-align: right;
-  width: 200px;
+  width: 7rem;
 }
 
 /* 右側の入力欄 */
 .multi-input {
   font-family: sans-serif;
-  font-size: 1.5rem;
-  padding: 0.5rem;
+  font-size: 1rem;
+  padding: 0.25rem;
   text-align: right;
-  width: 200px;
-  height: 12.5rem;
+  width: 7rem;
+  height: 10rem;
   resize: none;
   overflow-y: auto;
   border: 1px solid #ccc;
@@ -71,10 +71,10 @@
 }
 
 .count-hint {
-  font-size: 12px;
+  font-size: 0.5rem;
   color: gray;
   text-align: right;
-  margin-top: 4px;
+  margin-top: 0.25rem;
 }
 
 .result-area {
@@ -93,7 +93,7 @@
 
 .result-output {
   width: 80%;
-  min-height: 100px;
+  min-height: 5rem;
   display: flex;
   align-items: center;
   border: 1px solid #ccc;
