@@ -2,7 +2,6 @@
 
 ## アプリ URL
 [https://resical.vercel.app/](https://resical.vercel.app/)  
-※PCからのアクセスを推奨
 
 ---
 
@@ -55,5 +54,5 @@
 
 ### フロント・バックエンド構成
 - **フロントエンド**：React（Vercelデプロイ）
-- **バックエンド**：FastAPI（Renderデプロイ）
+- **バックエンド**：FastAPI（Cloud Runデプロイ）
 - CORS対応でフロント・バック間通信を許可
