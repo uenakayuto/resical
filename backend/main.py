@@ -1,4 +1,4 @@
-from fastapi import FastAPI, Response
+from fastapi import FastAPI, Response, Request
 from slowapi import Limiter, _rate_limit_exceeded_handler
 from slowapi.util import get_remote_address
 from slowapi.errors import RateLimitExceeded
@@ -106,7 +106,7 @@ def find_combination_worker(numbers, target, result_queue):
 
 @app.post("/find_combination", response_model=CombinationResponse)
 @limiter.limit("60/minute")
-async def find_combination(req: CombinationRequest):
+async def find_combination(request: Request, req: CombinationRequest):
     start = time.perf_counter()
     result_queue = queue.Queue()
     thread = threading.Thread(target=find_combination_worker, args=(req.numbers, req.target, result_queue))
@@ -131,7 +131,7 @@ class RemovalResponse(BaseModel):
 
 @app.post("/remove_used_numbers", response_model=RemovalResponse)
 @limiter.limit("60/minute")
-def remove_used_numbers(req: RemovalRequest):
+def remove_used_numbers(request: Request, req: RemovalRequest):
     remaining = req.numbers.copy()
     for u in req.used:
         if u in remaining:
@@ -142,7 +142,7 @@ def remove_used_numbers(req: RemovalRequest):
 @app.get("/", include_in_schema=False)
 @app.head("/", include_in_schema=False)
 @limiter.limit("60/minute")
-async def root():
+async def root(request: Request):
     return Response(content='{"message": "Hello, World!"}', media_type="application/json")
 
 # CORS ミドルウェア
