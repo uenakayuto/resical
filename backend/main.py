@@ -1,4 +1,8 @@
 from fastapi import FastAPI, Response
+from slowapi import Limiter, _rate_limit_exceeded_handler
+from slowapi.util import get_remote_address
+from slowapi.errors import RateLimitExceeded
+from slowapi.middleware import SlowAPIMiddleware
 from pydantic import BaseModel
 from typing import List, Optional
 import threading
@@ -7,7 +11,12 @@ import queue
 import math
 from fastapi.middleware.cors import CORSMiddleware
 
+limiter = Limiter(key_func=get_remote_address)
+
 app = FastAPI()
+app.state.limiter = limiter
+app.add_exception_handler(RateLimitExceeded, _rate_limit_exceeded_handler)
+app.add_middleware(SlowAPIMiddleware)
 
 class CombinationRequest(BaseModel):
     numbers: List[int]
@@ -96,6 +105,7 @@ def find_combination_worker(numbers, target, result_queue):
         result_queue.put(CombinationResponse(message="全合計が目標値に届きません．"))
 
 @app.post("/find_combination", response_model=CombinationResponse)
+@limiter.limit("60/minute")
 async def find_combination(req: CombinationRequest):
     start = time.perf_counter()
     result_queue = queue.Queue()
@@ -120,6 +130,7 @@ class RemovalResponse(BaseModel):
     remaining: List[int]
 
 @app.post("/remove_used_numbers", response_model=RemovalResponse)
+@limiter.limit("60/minute")
 def remove_used_numbers(req: RemovalRequest):
     remaining = req.numbers.copy()
     for u in req.used:
@@ -130,6 +141,7 @@ def remove_used_numbers(req: RemovalRequest):
 # ルートパス（UptimeRobot用など）
 @app.get("/", include_in_schema=False)
 @app.head("/", include_in_schema=False)
+@limiter.limit("60/minute")
 async def root():
     return Response(content='{"message": "Hello, World!"}', media_type="application/json")
 
