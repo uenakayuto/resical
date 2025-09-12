@@ -136,7 +136,7 @@
 
 .about {
   position: fixed;
-  bottom: 1rem;
+  margin-top: 1rem;
   right: 1rem;
   font-size: 1rem;
 }
