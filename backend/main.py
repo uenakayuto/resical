@@ -138,7 +138,7 @@ def remove_used_numbers(request: Request, req: RemovalRequest):
             remaining.remove(u)
     return {"remaining": remaining}
 
-# ルートパス（UptimeRobot用など）
+# ルートパス
 @app.get("/", include_in_schema=False)
 @app.head("/", include_in_schema=False)
 @limiter.limit("60/minute")

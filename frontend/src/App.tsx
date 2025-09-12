@@ -148,6 +148,12 @@ function App() {
           </button>
         </div>
       </div>
+      
+      <footer className='about'>
+        <a href="/about.html" target="_blank" rel="noopener noreferrer">
+          レシカルについて
+        </a>
+      </footer>
 
       {isLoading && (
         <div className="overlay">

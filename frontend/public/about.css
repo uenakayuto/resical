@@ -1,0 +1,55 @@
+header {
+  background-color: skyblue;
+  color: white;
+  font-size: 2rem;
+  text-align: center;
+  margin: 0;
+  padding: 1rem;
+}
+
+body {
+  font-family: sans-serif;
+  line-height: 1.6;
+  margin: 2rem;
+  background-color: #fafafa;
+  color: #222;
+  margin: 0;
+  padding: 0;
+}
+
+.context {
+  margin: 2rem;
+}
+
+table {
+  width: 100%;
+  border-collapse: collapse;
+  margin: 1rem 0;
+  background: white;
+}
+
+table, th, td {
+  border: 1px solid #ccc;
+}
+
+th, td {
+  padding: 0.5rem;
+  text-align: center;
+  vertical-align: middle;
+}
+
+.header_table {
+  text-align: center;
+  font-weight: bold;
+  font-size: 1.2rem;
+}
+
+img {
+  max-width: 100%;
+  height: auto;
+}
+
+.caption {
+  font-weight: bold;
+  font-size: 0.95rem;
+}

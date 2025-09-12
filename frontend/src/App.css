@@ -24,7 +24,7 @@
   width: 100%;
 }
 
-/* 各パネル共通 */
+/* 各パネル共通設定 */
 .left-panel, .right-panel {
   width: 50%;
   display: flex;
@@ -109,10 +109,10 @@
 /* ボタンのスタイル */
 .button-wrapper {
   display: flex;
-  flex-direction: column; /* 縦並びにする */
-  align-items: center;     /* 水平方向の中央揃え */
+  flex-direction: column;
+  align-items: center;
   margin-top: 1rem;
-  gap: 1rem;               /* ボタン間の余白 */
+  gap: 1rem;
 }
 
 /* 共通ボタンスタイル */
@@ -126,12 +126,19 @@
   border-radius: 8px;
   cursor: pointer;
   transition: background-color 0.2s;
-  white-space: nowrap;  /* ボタンの1行表示を強制 */
+  white-space: nowrap;
   text-align: center;
 }
 
 .base-button:hover {
   background-color: #0056b3;
+}
+
+.about {
+  position: fixed;
+  bottom: 1rem;
+  right: 1rem;
+  font-size: 1rem;
 }
 
 .overlay {
