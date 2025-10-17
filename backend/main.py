@@ -39,16 +39,24 @@ def reorder_by_original_order(original, subset):
     order_map = {num: i for i, num in enumerate(original)}
     return sorted(subset, key=lambda x: order_map[x])
 
+def remove_subset_from_list(original, subset):
+    remaining = original.copy()  # 元リストをコピー（破壊しないため）
+    for num in subset:
+        if num in remaining:
+            remaining.remove(num)  # 最初に見つかった要素を削除
+    return remaining
+
 def find_combination_worker(numbers, target, result_queue):
     validate_inputs(numbers, target, result_queue)
     if not result_queue.empty():
         return
-
-    sorted_numbers = sorted(numbers, reverse=True)
-    n = len(sorted_numbers)
+    
+    n = len(numbers)
     if n == 0:
         result_queue.put(CombinationResponse(message="数値欄が空です．"))
         return
+
+    sorted_numbers = sorted(numbers, reverse=True)
 
     max_number = sorted_numbers[0]
     threshold = math.ceil(target / max_number)
@@ -61,7 +69,14 @@ def find_combination_worker(numbers, target, result_queue):
     for i in range(n - 2, -1, -1):
         suffix_sum[i] = suffix_sum[i + 1] + sorted_numbers[i]
 
-    best_sum = float('inf')
+    reverse_mode = target <= suffix_sum[0] < 2 * target
+
+    if reverse_mode:
+        target = suffix_sum[0] - target
+        threshold = max(math.ceil(target / max_number) - 1, 0)
+        best_sum = 0
+    else:
+        best_sum = float('inf')
     best_combination = None
 
     def dfs(index, path, total, depth):
@@ -70,22 +85,32 @@ def find_combination_worker(numbers, target, result_queue):
         # 深さが threshold に満たない間は合計チェックしない
         if depth >= threshold:
             if total > target:
-                if total < best_sum:
-                    best_sum = total
-                    best_combination = list(path)
+                if not reverse_mode:
+                    if total < best_sum:
+                        best_sum = total
+                        best_combination = list(path)
                 return False  # 枝切り
             elif total < target:
+                if reverse_mode:
+                    if total > best_sum:
+                        best_sum = total
+                        best_combination = list(path)
                 threshold = depth + 1
             elif total == target:
-                reordered = reorder_by_original_order(numbers, path)
+                if reverse_mode:
+                    reordered = remove_subset_from_list(numbers, path)
+                else:
+                    reordered = reorder_by_original_order(numbers, path)
                 result_queue.put(CombinationResponse(exact=reordered))
                 return True  # 終了              
 
         for i in range(index, n):
-            # 事前計算した suffix_sum で O(1) チェック
-            if suffix_sum[i] < target - total:
-                # 残りの合計でも到達不能 -> 以降さらに小さくなるので break
-                break
+            if reverse_mode:
+                if suffix_sum[i] < best_sum - total:
+                    break
+            else:
+                if suffix_sum[i] < target - total:
+                    break
 
             next_num = sorted_numbers[i]
 
@@ -99,10 +124,16 @@ def find_combination_worker(numbers, target, result_queue):
         return
 
     if best_combination:
-        reordered = reorder_by_original_order(numbers, best_combination)
-        result_queue.put(CombinationResponse(closest=reordered, closest_sum=sum(best_combination)))
+        if reverse_mode:
+            reordered = remove_subset_from_list(numbers, best_combination)
+        else:
+            reordered = reorder_by_original_order(numbers, best_combination)
+        result_queue.put(CombinationResponse(closest=reordered, closest_sum=sum(reordered)))
     else:
-        result_queue.put(CombinationResponse(message="全合計が目標値に届きません．"))
+        if reverse_mode:
+            result_queue.put(CombinationResponse(closest=numbers, closest_sum=suffix_sum[0]))
+        else:
+            result_queue.put(CombinationResponse(message="全合計が目標値に届きません．"))
 
 @app.post("/find_combination", response_model=CombinationResponse)
 @limiter.limit("60/minute")
