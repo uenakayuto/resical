@@ -40,10 +40,10 @@ def reorder_by_original_order(original, subset):
     return sorted(subset, key=lambda x: order_map[x])
 
 def remove_subset_from_list(original, subset):
-    remaining = original.copy()  # 元リストをコピー（破壊しないため）
+    remaining = original.copy()
     for num in subset:
         if num in remaining:
-            remaining.remove(num)  # 最初に見つかった要素を削除
+            remaining.remove(num)
     return remaining
 
 def find_combination_worker(numbers, target, result_queue):
